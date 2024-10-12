@@ -48,7 +48,7 @@ public class Play extends PlayerCommand {
         } else {
             var data = deezerClient.search(query);
             if (!data.isEmpty())
-                song =  data.getData().getFirst();
+                song = data.getData().getFirst();
         }
 
         if (song == null)
@@ -70,8 +70,8 @@ public class Play extends PlayerCommand {
                 ? deezerClient.search(songName)
                 : deezerClient.search(songName, songArtist.getAsString());
 
-        if (!songName.isEmpty() && results.isEmpty())
-            results = deezerClient.search(songName.substring(0, 1));
+        if (results.isEmpty())
+            results = deezerClient.search(songName.isEmpty() ? songName : songName.substring(0, 1));
 
         List<Command.Choice> choices = results.getData().stream()
                 .map(x -> {
