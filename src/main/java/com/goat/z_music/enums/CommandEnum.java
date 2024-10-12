@@ -11,7 +11,8 @@ public enum CommandEnum {
     RESUME("resume", Resume.class),
     SKIP("skip", Skip.class),
     LIST("list", List.class),
-    JOIN("join", Join.class);
+    JOIN("join", Join.class),
+    NO_COMMAND(null, NoCommand.class);
 
     private final String keyword;
     private final Class<? extends BaseCommand> clazz;
@@ -26,7 +27,7 @@ public enum CommandEnum {
             if (cmd.getKeyword().equals(keyword))
                 return cmd;
         }
-        return null;
+        return NO_COMMAND;
     }
 
 }

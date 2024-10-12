@@ -11,7 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "deezer", url = "${deezer.url}")
 public interface DeezerClient {
 
-    @GetMapping("/search?q={query}")
+    @GetMapping("/search?q={query}&limit=${deezer.search.limit}")
     GenericData<SongDTO> search(@RequestParam String query);
+
+    @GetMapping("/search?q=artist:{artist} track:{query}&limit=${deezer.search.limit}")
+    GenericData<SongDTO> search(@RequestParam String query, @RequestParam String artist);
+
+    @GetMapping("/track/{id}")
+    SongDTO findById(@RequestParam Long id);
 
 }

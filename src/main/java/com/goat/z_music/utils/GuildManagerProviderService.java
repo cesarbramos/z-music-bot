@@ -18,4 +18,10 @@ public class GuildManagerProviderService {
         return musicManagers.get(guildId);
     }
 
+    public GuildMusicManager remove(Long guildId) {
+        return this.musicManagers.remove(guildId);
+    }
+
+
+
 }

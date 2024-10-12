@@ -3,8 +3,11 @@ package com.goat.z_music.utils;
 import com.goat.z_music.dto.SongDTO;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
-import java.awt.Color;
+import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 
 public class EmbedUtil {
@@ -38,5 +41,16 @@ public class EmbedUtil {
                 .setDescription(sb.toString())
                 .build();
     }
+
+    public static List<Button> getActionButtons() {
+        return Arrays.asList(
+                Button.secondary("page_first", Emoji.fromUnicode("⏪")),
+                Button.secondary("page_back", Emoji.fromUnicode("◀")),
+                Button.secondary("page_cancel", Emoji.fromUnicode("❌")),
+                Button.secondary("page_next", Emoji.fromUnicode("▶")),
+                Button.secondary("page_last", Emoji.fromUnicode("⏩"))
+        );
+    }
+
 
 }

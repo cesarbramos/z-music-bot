@@ -1,5 +1,7 @@
 package com.goat.z_music.utils;
 
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+
 public class Util {
 
     public static int SEGUNDOS = 60;
@@ -13,6 +15,13 @@ public class Util {
 
     public static String inlineCode(String content) {
         return "`"+content+"`";
+    }
+
+    public static Emoji fromPosition(int position) {
+        if (position > 10 || position < 1) return null;
+        if (position == 10) return Emoji.fromUnicode("🔟");
+        var unicode = String.format("U+003%d U+20E3", position);
+        return Emoji.fromUnicode(unicode);
     }
 
 }
