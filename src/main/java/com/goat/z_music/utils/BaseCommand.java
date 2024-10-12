@@ -15,7 +15,9 @@ public abstract class BaseCommand {
         return null;
     }
 
-    protected long getGuildId(SlashCommandInteractionEvent e) {
+    protected Long getGuildId(SlashCommandInteractionEvent e) {
+        if (e.getGuild() == null)
+            return null;
         return e.getGuild().getIdLong();
     }
 

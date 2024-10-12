@@ -10,9 +10,4 @@ public class TrackUtil {
         return DEEZER_REGEX_URL.matcher(value);
     }
 
-    public String getIdFromUrl(String url) {
-        DEEZER_REGEX_URL.matcher(url).find();
-        return "";
-    }
-
 }

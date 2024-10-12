@@ -17,11 +17,4 @@ public class Util {
         return "`"+content+"`";
     }
 
-    public static Emoji fromPosition(int position) {
-        if (position > 10 || position < 1) return null;
-        if (position == 10) return Emoji.fromUnicode("🔟");
-        var unicode = String.format("U+003%d U+20E3", position);
-        return Emoji.fromUnicode(unicode);
-    }
-
 }
