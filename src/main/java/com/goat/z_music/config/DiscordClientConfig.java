@@ -35,14 +35,18 @@ public class DiscordClientConfig {
     private final ButtonEventListener buttonEventListener;
     private final static String ENV_PROPERTY = "Z_MUSIC_TOKEN";
     private final ListenerCommandAdapter listenerCommandAdapter;
+    private final RegisterCommands registerCommands;
 
     @Autowired
     public DiscordClientConfig(GuildManagerProviderService guildManagerProviderService,
                                ButtonEventListener buttonEventListener,
-                               ListenerCommandAdapter listenerCommandAdapter) throws Exception {
+                               ListenerCommandAdapter listenerCommandAdapter,
+                               LavaNodeConfig lavaNodeConfig,
+                               RegisterCommands registerCommands) throws Exception {
         this.guildManagerProviderService = guildManagerProviderService;
         this.buttonEventListener = buttonEventListener;
         this.listenerCommandAdapter= listenerCommandAdapter;
+        this.registerCommands = registerCommands;
 
         var token = System.getenv(ENV_PROPERTY);
 
@@ -52,9 +56,9 @@ public class DiscordClientConfig {
         var client = new LavalinkClient(Helpers.getUserIdFromToken(token));
 
         var node = new NodeOptions.Builder()
-                .setName("principal")
-                .setServerUri("ws://localhost:2333")
-                .setPassword("youshallnotpass")
+                .setName(lavaNodeConfig.getNodeName())
+                .setServerUri(lavaNodeConfig.getServerUri())
+                .setPassword(lavaNodeConfig.getPassword())
                 .build();
 
         client.addNode(node);
@@ -96,6 +100,8 @@ public class DiscordClientConfig {
         jda.addEventListener(buttonEventListener);
         jda.addEventListener(listenerCommandAdapter);
 
+        registerCommands.register(jda);
+
         return jda;
     }
 
@@ -103,6 +109,7 @@ public class DiscordClientConfig {
     public AudioPlayerManager getAudioPlayerManager() {
         AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
         playerManager.registerSourceManager(new HttpAudioSourceManager());
         return playerManager;
     }

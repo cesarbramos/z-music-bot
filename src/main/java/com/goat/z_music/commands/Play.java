@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.springframework.stereotype.Service;
@@ -80,5 +82,17 @@ public class Play extends PlayerCommand {
                 })
                 .toList();
         return e.replyChoices(choices);
+    }
+
+    @Override
+    public SlashCommandData definition() {
+        var commandData = Commands.slash("play", "Reproduce una canción");
+
+        for (var enu : PlayOptionsEnum.values()) {
+            commandData = commandData.addOption(enu.getOptionType(), enu.getName(), enu.getDescription(),
+                    enu.isRequired(), enu.isAutocomplete());
+        }
+
+        return commandData;
     }
 }

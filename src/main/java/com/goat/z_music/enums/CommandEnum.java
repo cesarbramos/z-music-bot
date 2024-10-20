@@ -12,6 +12,7 @@ public enum CommandEnum {
     SKIP("skip", Skip.class),
     LIST("list", List.class),
     JOIN("join", Join.class),
+    RADIO("radio", Radio.class),
     NO_COMMAND(null, NoCommand.class);
 
     private final String keyword;
