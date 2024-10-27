@@ -4,9 +4,13 @@ import com.goat.z_music.client.DeezerClient;
 import com.goat.z_music.dto.GenericData;
 import com.goat.z_music.dto.SongDTO;
 import com.goat.z_music.enums.PlayOptionsEnum;
+import com.goat.z_music.enums.UrlSourceEnum;
 import com.goat.z_music.utils.AudioLoader;
 import com.goat.z_music.utils.EmbedUtil;
 import com.goat.z_music.utils.PlayerCommand;
+import com.goat.z_music.utils.TrackUtil;
+import dev.arbjerg.lavalink.client.player.LavalinkLoadResult;
+import dev.arbjerg.lavalink.client.player.TrackLoaded;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -17,10 +21,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.goat.z_music.utils.TrackUtil.isDeezerTrack;
 
 @Service
 @Slf4j
@@ -42,15 +46,30 @@ public class Play extends PlayerCommand {
         var query = e.getOption("song").getAsString();
         SongDTO song = null;
 
-        var matcher = isDeezerTrack(query);
+        var sourceEnum = UrlSourceEnum.fromString(query);
+        switch (sourceEnum) {
+            case null -> {
+                var data = deezerClient.search(query);
+                if (!data.isEmpty())
+                    song = data.getData().getFirst();
+            }
+            case DEEZER -> {
+                var matcher = sourceEnum.getMatcher(query);
+                matcher.find();
+                Long id = Long.valueOf(matcher.group(1));
+                song = deezerClient.findById(id);
+            }
+            case YOUTUBE -> {
+                final var mngr = this.getOrCreateMusicManager(e);
 
-        if (matcher.find()) {
-            Long id = Long.valueOf(matcher.group(1));
-            song = deezerClient.findById(id);
-        } else {
-            var data = deezerClient.search(query);
-            if (!data.isEmpty())
-                song = data.getData().getFirst();
+                Mono<SongDTO> songDTOMono = Mono.create(sink ->
+                        link.loadItem(query).subscribe(new AudioLoader(e, mngr, null, sink)));
+
+                song = songDTOMono.block();
+
+                var msg = EmbedUtil.playSong(song);
+                return e.replyEmbeds(msg);
+            }
         }
 
         if (song == null)
@@ -67,6 +86,12 @@ public class Play extends PlayerCommand {
     @Override
     public AutoCompleteCallbackAction autocomplete(CommandAutoCompleteInteractionEvent e) {
         var songName = e.getOption(PlayOptionsEnum.SONG.getName()).getAsString();
+
+        var enumx = UrlSourceEnum.fromString(songName);
+        if (enumx != null)
+            return e.replyChoices(new ArrayList<>());
+
+
         var songArtist = e.getOption(PlayOptionsEnum.ARTIST.getName());
         GenericData<SongDTO> results = songArtist == null
                 ? deezerClient.search(songName)

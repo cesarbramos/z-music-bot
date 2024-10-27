@@ -1,34 +1,42 @@
 package com.goat.z_music.utils;
 
+import com.goat.z_music.dto.AlbumDTO;
+import com.goat.z_music.dto.ArtistDTO;
 import com.goat.z_music.dto.SongDTO;
 import dev.arbjerg.lavalink.client.AbstractAudioLoadResultHandler;
 import dev.arbjerg.lavalink.client.player.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
+import reactor.core.publisher.MonoSink;
 
 import java.util.List;
 
 public class AudioLoader extends AbstractAudioLoadResultHandler {
     private final SlashCommandInteractionEvent event;
     private final GuildMusicManager mngr;
-    private final SongDTO song;
+    private SongDTO song;
+    private final MonoSink<SongDTO> songMonoSink;
 
     public AudioLoader(SlashCommandInteractionEvent event, GuildMusicManager mngr, SongDTO song) {
+        this(event, mngr, song, null);
+    }
+
+    public AudioLoader(SlashCommandInteractionEvent event, GuildMusicManager mngr, SongDTO song, MonoSink<SongDTO> songMonoSink) {
         this.event = event;
         this.mngr = mngr;
         this.song = song;
+        this.songMonoSink = songMonoSink;
     }
 
     @Override
     public void ontrackLoaded(@NotNull TrackLoaded result) {
+        if (songMonoSink != null) {
+            song = TrackUtil.getTrackLoaded(result);
+            songMonoSink.success(song);
+        }
         final Track track = result.getTrack();
         track.setUserData(song);
-        result.getTrack().setUserData(event.getUser());
-
         this.mngr.scheduler.enqueue(track);
-
-        final var trackTitle = track.getInfo().getTitle();
-
         //event.getHook().sendMessage("Added to queue: " + trackTitle + "\nRequested by: <@" + event.getUser().getName() + '>').queue();
     }
 

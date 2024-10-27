@@ -10,13 +10,14 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class GuildMusicManager {
-    public final TrackScheduler scheduler = new TrackScheduler(this);
+    public final TrackScheduler scheduler;
     private final long guildId;
     private final LavalinkClient lavalink;
 
     public GuildMusicManager(long guildId, LavalinkClient lavalink) {
         this.lavalink = lavalink;
         this.guildId = guildId;
+        this.scheduler = new TrackScheduler(this);
     }
 
     private void setPaused(boolean state) {
@@ -61,6 +62,10 @@ public class GuildMusicManager {
         return Optional.ofNullable(
                 this.lavalink.getLinkIfCached(this.guildId)
         );
+    }
+
+    public LavalinkClient getLavalinkClient() {
+        return lavalink;
     }
 
     public Optional<LavalinkPlayer> getPlayer() {

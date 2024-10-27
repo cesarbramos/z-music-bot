@@ -1,19 +1,31 @@
 package com.goat.z_music.utils;
 
-import dev.arbjerg.lavalink.protocol.v4.Message;
-import dev. arbjerg.lavalink.client.player.Track;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import dev.arbjerg.lavalink.client.event.TrackEndEvent;
+import dev.arbjerg.lavalink.client.player.Track;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class TrackScheduler {
+@Slf4j
+public class TrackScheduler extends AudioEventAdapter {
     private final GuildMusicManager guildMusicManager;
     public final Queue<Track> queue = new LinkedList<>();
     public final Queue<Track> removedTracks = new LinkedList<>();
 
     public TrackScheduler(GuildMusicManager guildMusicManager) {
         this.guildMusicManager = guildMusicManager;
+        this.guildMusicManager.getLavalinkClient()
+                .on(TrackEndEvent.class)
+                .subscribe((event) -> {
+                    if (event.getEndReason().getMayStartNext())
+                        nextTrack();
+                });
     }
 
     public void enqueue(Track track) {
@@ -23,7 +35,6 @@ public class TrackScheduler {
                 this.queue.offer(track);
                 link.createOrUpdatePlayer()
                         .setTrack(poll())
-                        .setVolume(80)
                         .subscribe();
             });
             return;
@@ -45,9 +56,7 @@ public class TrackScheduler {
                         this.startTrack(poll());
                     }
                 },
-                () -> {
-                    this.startTrack(poll());
-                }
+                () -> this.startTrack(poll())
         );
     }
 
@@ -58,10 +67,12 @@ public class TrackScheduler {
     public void onTrackStart(Track track) {
         // Your homework: Send a message to the channel somehow, have fun!
         System.out.println("Track started: " + track.getInfo().getTitle());
+
     }
 
-    public void onTrackEnd(Track lastTrack, Message.EmittedEvent.TrackEndEvent.AudioTrackEndReason endReason) {
-        if (endReason.getMayStartNext()) {
+    @Override
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        if (endReason.mayStartNext) {
             final var nextTrack = poll();
 
             if (nextTrack != null) {
@@ -74,7 +85,6 @@ public class TrackScheduler {
         this.guildMusicManager.getLink().ifPresent(
                 (link) -> link.createOrUpdatePlayer()
                         .setTrack(track)
-                        .setVolume(80)
                         .subscribe()
         );
     }
