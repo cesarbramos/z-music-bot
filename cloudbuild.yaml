@@ -1,19 +1,19 @@
 steps:
   # Paso 1: Compilar la aplicación con Gradle
-  - name: 'gcr.io/cloud-builders-community/gradle'
+  - name: 'gcr.io/$PROJECT_ID/gradle'
     args: ['clean', 'build']
     dir: '.'
 
   # Paso 2: Construir la imagen Docker para la aplicación
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/$PROJECT_ID/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/spring-app', '.']
 
   # Paso 3: Subir la imagen al Google Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/$PROJECT_ID/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/spring-app']
 
   # Paso 4: Desplegar en Google Cloud Run, inyectando el secreto como variable de entorno
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/$PROJECT_ID/gcloud'
     args:
       - 'run'
       - 'deploy'
