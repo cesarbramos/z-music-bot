@@ -22,7 +22,16 @@ steps:
       - '--platform=managed'
       - '--region=us-east1'  # Cambia a tu región preferida
       - '--allow-unauthenticated'
-      - '--set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN'
+      - '-set-env-vars Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
+
+    secretEnv: [
+      'Z_MUSIC_TOKEN'
+    ]
 
 images:
   - 'gcr.io/$PROJECT_ID/spring-app'
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/Z_MUSIC_TOKEN/versions/latest
+      env: 'Z_MUSIC_TOKEN'
