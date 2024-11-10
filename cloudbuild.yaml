@@ -1,6 +1,6 @@
 steps:
   # Paso 1: Compilar la aplicación con Gradle usando Java 21
-  - name: 'gradle:7.6-jdk21'  # Imagen de Gradle con JDK 21
+  - name: 'gradle:8.10.2-jdk21-corretto'  # Imagen de Gradle con JDK 21
     entrypoint: 'gradle'
     args: ['clean', 'build']
     dir: '.'
