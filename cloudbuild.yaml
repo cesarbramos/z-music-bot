@@ -4,6 +4,7 @@ steps:
     entrypoint: 'gradle'
     args: ['clean', 'build']
     dir: '.'
+    secretEnv: ['Z_MUSIC_TOKEN']
 
   # Paso 2: Construir la imagen Docker para la aplicación
   - name: 'gcr.io/cloud-builders/docker'
