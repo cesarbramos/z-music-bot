@@ -1,6 +1,6 @@
 steps:
   # Paso 1: Compilar la aplicación con Gradle
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/gradle'
     args: ['clean', 'build']
     dir: '.'
 
