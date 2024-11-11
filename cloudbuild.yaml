@@ -2,12 +2,9 @@ steps:
   # Paso 1: Compilar la aplicación con Gradle usando Java 21
   - name: 'gradle:8.10.2-jdk21-corretto'  # Imagen de Gradle con JDK 21
     entrypoint: 'gradle'
-    args:
-      - 'clean'
-      - 'build'
+    args: ['clean', 'build']
     dir: '.'
-    secretEnv:
-      - 'Z_MUSIC_TOKEN'
+    secretEnv: ['Z_MUSIC_TOKEN']
 
   # Paso 2: Construir la imagen Docker para la aplicación
   - name: 'gcr.io/cloud-builders/docker'
@@ -17,46 +14,20 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/spring-app']
 
-  # Paso 4: Elimina el job si existe
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        if gcloud run jobs describe spring-app-job --region=us-east1 > /dev/null 2>&1; then
-          echo "Deleting existing job spring-app-job..."
-          gcloud run jobs delete spring-app-job --region=us-east1 --quiet
-        else
-          echo "Job spring-app-job does not exist, no need to delete."
-        fi
-
-  # Paso 5: Crea el trabajo en Cloud Run
+  # Paso 4: Desplegar en Google Cloud Run, inyectando el secreto como variable de entorno
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
-      - 'jobs'
-      - 'create'
-      - 'spring-app-job'
+      - 'deploy'
+      - 'spring-app'
       - '--image=gcr.io/$PROJECT_ID/spring-app'
+      - '--platform=managed'
       - '--region=us-east1'  # Cambia a tu región preferida
-      - '--task-timeout=3600s'
-      - '--cpu=2'
-      - '--memory=4Gi'
-      - '--max-retries=3'
-      - '--set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest'
-    secretEnv:
-      - 'Z_MUSIC_TOKEN'
-
-  # Paso 6: Ejecuta el trabajo en Cloud Run
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      - 'run'
-      - 'jobs'
-      - 'execute'
-      - 'spring-app-job'
-      - '--region=us-east1'
-    secretEnv:
-      - 'Z_MUSIC_TOKEN'
+      - '--allow-unauthenticated'
+      - '--port=2333'
+      - '--timeout=360'
+      - '--set-env-vars=Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
+    secretEnv: ['Z_MUSIC_TOKEN']
 
 images:
   - 'gcr.io/$PROJECT_ID/spring-app'
