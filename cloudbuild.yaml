@@ -22,15 +22,11 @@ steps:
       - 'create'
       - 'spring-app-job'
       - '--image=gcr.io/$PROJECT_ID/spring-app'
-      - '--platform=managed'
       - '--region=us-east1'  # Cambia a tu región preferida
-      - '--allow-unauthenticated'
-      - '--port=2333'
-      - '--timeout=300'
       - '--task-timeout=3600s'
       - '--memory=512Mi'
-      - '--set-env-vars=Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
       - '--max-retries=3'
+      - '--set-env-vars=Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
     secretEnv: ['Z_MUSIC_TOKEN']
 
   # Paso 5: Ejecuta el trabajo en Cloud Run
