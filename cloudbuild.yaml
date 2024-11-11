@@ -18,6 +18,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gke-deploy'
     args:
       - 'run'
+      - '--app=spring-app'
       - '--filename=deployment.yaml'
       - '--image=gcr.io/$PROJECT_ID/spring-app'
       - '--location=us-east1'
