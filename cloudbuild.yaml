@@ -2,9 +2,12 @@ steps:
   # Paso 1: Compilar la aplicación con Gradle usando Java 21
   - name: 'gradle:8.10.2-jdk21-corretto'  # Imagen de Gradle con JDK 21
     entrypoint: 'gradle'
-    args: ['clean', 'build']
+    args:
+      - 'clean'
+      - 'build'
     dir: '.'
-    secretEnv: ['Z_MUSIC_TOKEN']
+    secretEnv:
+      - 'Z_MUSIC_TOKEN'
 
   # Paso 2: Construir la imagen Docker para la aplicación
   - name: 'gcr.io/cloud-builders/docker'
@@ -26,8 +29,9 @@ steps:
       - '--task-timeout=3600s'
       - '--memory=512Mi'
       - '--max-retries=3'
-      - '--set-env-vars=Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
-    secretEnv: ['Z_MUSIC_TOKEN']
+      - '-set-secrets=Z_MUSIC_TOKEN=projects/$PROJECT_ID/secrets/Z_MUSIC_TOKEN:latest'
+    secretEnv:
+      - 'Z_MUSIC_TOKEN'
 
   # Paso 5: Ejecuta el trabajo en Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -37,7 +41,8 @@ steps:
       - 'execute'
       - 'spring-app-job'
       - '--region=us-east1'
-    secretEnv: ['Z_MUSIC_TOKEN']
+    secretEnv:
+      - 'Z_MUSIC_TOKEN'
 
 images:
   - 'gcr.io/$PROJECT_ID/spring-app'
