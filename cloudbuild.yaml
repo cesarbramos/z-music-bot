@@ -22,7 +22,7 @@ steps:
       - '--filename=deployment.yaml'
       - '--image=gcr.io/$PROJECT_ID/spring-app'
       - '--location=us-east1'
-      - '--cluster=cluster-1'
+      - '--cluster=autopilot-cluster-1'
       - '--expose=2333'
     secretEnv: ['Z_MUSIC_TOKEN']
 
