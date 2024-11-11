@@ -33,8 +33,15 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: 'Z_MUSIC_TOKEN'
-                  name: deployment-1-config-r700
+                  name: deployment-1-config-r700 # Reference to your GKE Config map name
           name: spring-app
           image: gcr.io/sound-arcade-441302-q1/spring-app
           ports:
             - containerPort: 2333
+          resources:
+            limits:
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 2000m
+              memory: 8Gi
+              ephemeral-storage: 1Gi
