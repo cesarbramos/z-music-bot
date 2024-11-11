@@ -20,6 +20,8 @@ RUN wget "https://maven.lavalink.dev/releases/dev/lavalink/youtube/youtube-plugi
   # Copia los archivos JAR generados en `build/libs/` al contenedor
 COPY build/libs/${BOT_FILE} /app/${BOT_FILE}
 
+EXPOSE 2333
+
   # Comando para ejecutar ambos .jar en paralelo si es necesario.
 CMD ["sh", "-c", "java -jar /app/${LAVALINK_FILE} & java -jar /app/${BOT_FILE}"]
 

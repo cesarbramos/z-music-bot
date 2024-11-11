@@ -25,6 +25,7 @@ steps:
       - '--region=us-east1'  # Cambia a tu región preferida
       - '--allow-unauthenticated'
       - '--set-env-vars=Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
+      - '--set-env-vars=PORT=2333'
     secretEnv: ['Z_MUSIC_TOKEN']
 
 images:
