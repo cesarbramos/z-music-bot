@@ -17,23 +17,35 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/spring-app']
 
-  # Paso 4: Crea el trabajo en Cloud Run
+    # Paso 3: Crear o actualizar el trabajo en Cloud Run según sea necesario
   - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'sh'
     args:
-      - 'run'
-      - 'jobs'
-      - 'create'
-      - 'spring-app-job'
-      - '--image=gcr.io/$PROJECT_ID/spring-app'
-      - '--region=us-east1'  # Cambia a tu región preferida
-      - '--task-timeout=3600s'
-      - '--memory=512Mi'
-      - '--max-retries=3'
-      - '--set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest'
+      - '-c'
+      - |
+        if gcloud run jobs describe spring-app-job --region=us-east1 > /dev/null 2>&1; then
+          echo "Updating existing job spring-app-job..."
+          gcloud run jobs update spring-app-job \
+            --image=gcr.io/$PROJECT_ID/spring-app \
+            --region=us-east1 \
+            --task-timeout=3600s \
+            --memory=512Mi \
+            --max-retries=3 \
+            --set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest
+        else
+          echo "Creating new job spring-app-job..."
+          gcloud run jobs create spring-app-job \
+            --image=gcr.io/$PROJECT_ID/spring-app \
+            --region=us-east1 \
+            --task-timeout=3600s \
+            --memory=512Mi \
+            --max-retries=3 \
+            --set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest
+        fi
     secretEnv:
       - 'Z_MUSIC_TOKEN'
 
-  # Paso 5: Ejecuta el trabajo en Cloud Run
+  # Paso 6: Ejecuta el trabajo en Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
