@@ -29,7 +29,7 @@ steps:
       - '--task-timeout=3600s'
       - '--memory=512Mi'
       - '--max-retries=3'
-      - '-set-secrets=Z_MUSIC_TOKEN=projects/$PROJECT_ID/secrets/Z_MUSIC_TOKEN:latest'
+      - '--set-secrets=Z_MUSIC_TOKEN=projects/$PROJECT_ID/secrets/Z_MUSIC_TOKEN:latest'
     secretEnv:
       - 'Z_MUSIC_TOKEN'
 
