@@ -40,7 +40,8 @@ steps:
       - '--image=gcr.io/$PROJECT_ID/spring-app'
       - '--region=us-east1'  # Cambia a tu región preferida
       - '--task-timeout=3600s'
-      - '--memory=8192Mi'
+      - '--cpu=2'
+      - '--memory=4Gi'
       - '--max-retries=3'
       - '--set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest'
     secretEnv:
