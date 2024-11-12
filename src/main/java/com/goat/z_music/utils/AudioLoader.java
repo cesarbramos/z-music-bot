@@ -1,7 +1,5 @@
 package com.goat.z_music.utils;
 
-import com.goat.z_music.dto.AlbumDTO;
-import com.goat.z_music.dto.ArtistDTO;
 import com.goat.z_music.dto.SongDTO;
 import dev.arbjerg.lavalink.client.AbstractAudioLoadResultHandler;
 import dev.arbjerg.lavalink.client.player.*;

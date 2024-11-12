@@ -1,7 +1,5 @@
 package com.goat.z_music.utils;
 
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-
 public class Util {
 
     public static int SEGUNDOS = 60;
