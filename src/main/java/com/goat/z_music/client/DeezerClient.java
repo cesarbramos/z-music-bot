@@ -20,4 +20,7 @@ public interface DeezerClient {
     @GetMapping("/track/{id}")
     SongDTO findById(@RequestParam Long id);
 
+    @GetMapping("/chart/0/tracks")
+    GenericData<SongDTO> topTracks();
+
 }

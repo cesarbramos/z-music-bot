@@ -88,14 +88,13 @@ public class Play extends PlayerCommand {
         if (enumx != null)
             return e.replyChoices(new ArrayList<>());
 
-
         var songArtist = e.getOption(PlayOptionsEnum.ARTIST.getName());
         GenericData<SongDTO> results = songArtist == null
                 ? deezerClient.search(songName)
                 : deezerClient.search(songName, songArtist.getAsString());
 
         if (results.isEmpty())
-            results = deezerClient.search(songName.isEmpty() ? songName : songName.substring(0, 1));
+            results = deezerClient.topTracks();
 
         List<Command.Choice> choices = results.getData().stream()
                 .map(x -> {
