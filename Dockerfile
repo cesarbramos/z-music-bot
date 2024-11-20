@@ -1,5 +1,5 @@
 # Usa una imagen base de Java
-FROM amazoncorretto:21-alpine3.17-full
+FROM eclipse-temurin:21-jdk-jammy
 
   # Define el directorio de trabajo
 WORKDIR /app
@@ -7,7 +7,7 @@ WORKDIR /app
 ENV BOT_FILE='z-music-0.0.1-SNAPSHOT.jar'
 ENV LAVALINK_FILE='Lavalink-lavasrc-user.jar'
 
-RUN apk update && apk add --no-cache tzdata wget
+RUN apt update -y && apt install tzdata -y
 
 ENV TZ="America/Bogota"
 
@@ -15,8 +15,6 @@ ENV TZ="America/Bogota"
 RUN wget https://github.com/cesarbramos/z-music-bot/releases/download/0.0.2/${LAVALINK_FILE}
 
 RUN mkdir plugins
-
-RUN wget "https://maven.lavalink.dev/releases/dev/lavalink/youtube/youtube-plugin/1.8.2/youtube-plugin-1.8.2.jar" -P /app/plugins
 
   # Copia los archivos JAR generados en `build/libs/` al contenedor
 COPY build/libs/${BOT_FILE} /app/${BOT_FILE}
