@@ -1,5 +1,5 @@
 # Usa una imagen base de Java
-FROM ghcr.io/graalvm/graalvm-ce:21
+FROM amazoncorretto:21.0.4-al2-generic
 
   # Define el directorio de trabajo
 WORKDIR /app
