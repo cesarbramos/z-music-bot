@@ -1,11 +1,15 @@
 # Usa una imagen base de Java
-FROM eclipse-temurin:21-jdk-jammy
+FROM ghcr.io/graalvm/graalvm-ce:21
 
   # Define el directorio de trabajo
 WORKDIR /app
 
 ENV BOT_FILE='z-music-0.0.1-SNAPSHOT.jar'
 ENV LAVALINK_FILE='Lavalink-lavasrc-user.jar'
+
+RUN apt update && apt install tzdata -y
+
+ENV TZ="America/Bogota"
 
 # Descarga el .jar de Lavalink
 RUN wget https://github.com/cesarbramos/z-music-bot/releases/download/0.0.2/${LAVALINK_FILE}
