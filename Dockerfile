@@ -1,5 +1,5 @@
 # Usa una imagen base de Java
-FROM amazoncorretto:21.0.4-al2-generic
+FROM amazoncorretto:21-alpine3.17-full
 
   # Define el directorio de trabajo
 WORKDIR /app
@@ -7,7 +7,7 @@ WORKDIR /app
 ENV BOT_FILE='z-music-0.0.1-SNAPSHOT.jar'
 ENV LAVALINK_FILE='Lavalink-lavasrc-user.jar'
 
-RUN yum update -y && yum install tzdata -y && yum install wget -y
+RUN apk update && apk add --no-cache tzdata wget
 
 ENV TZ="America/Bogota"
 
