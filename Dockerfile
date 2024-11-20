@@ -7,7 +7,7 @@ WORKDIR /app
 ENV BOT_FILE='z-music-0.0.1-SNAPSHOT.jar'
 ENV LAVALINK_FILE='Lavalink-lavasrc-user.jar'
 
-RUN microdnf update && microdnf install tzdata -y && microdnf install wget -y
+RUN yum update && yum install tzdata -y && yum install wget -y
 
 ENV TZ="America/Bogota"
 
