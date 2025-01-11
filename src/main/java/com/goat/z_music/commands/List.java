@@ -35,6 +35,7 @@ public class List extends PlayerCommand {
                     data.getArtist().getName());
             sb.append(fieldData);
         }
+
         mb.setDescription(Util.inlineCode(sb.toString()));
 
         return e.replyEmbeds(mb.build());

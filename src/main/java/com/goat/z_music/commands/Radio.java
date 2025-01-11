@@ -5,8 +5,10 @@ import com.goat.z_music.dto.ArtistDTO;
 import com.goat.z_music.dto.SongDTO;
 import com.goat.z_music.enums.RadiosEnum;
 import com.goat.z_music.utils.PlayerCommand;
-import dev.arbjerg.lavalink.client.AbstractAudioLoadResultHandler;
-import dev.arbjerg.lavalink.client.player.*;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -64,46 +66,38 @@ public class Radio extends PlayerCommand {
     public void playStream(Guild guild, String url, SlashCommandInteractionEvent e, RadiosEnum radioEnum) {
         final var mngr = this.getOrCreateMusicManager(e);
 
-        var lavalink = lavalinkClient.getOrCreateLink(guild.getIdLong());
-        lavalink.loadItem(url)
-                .subscribe(new AbstractAudioLoadResultHandler() {
-                    @Override
-                    public void ontrackLoaded(@NotNull TrackLoaded result) {
-                        final Track track = result.getTrack();
+        audioPlayerManager.loadItem(url, new AudioLoadResultHandler() {
 
-                        var data = new SongDTO();
-                        data.setDuration(-1L);
-                        data.setTitle(radioEnum.getTitle());
-                        var artist = new ArtistDTO();
-                        artist.setName("emisora");
-                        data.setArtist(artist);
+            @Override
+            public void trackLoaded(AudioTrack result) {
+                var data = new SongDTO();
+                data.setDuration(-1L);
+                data.setTitle(radioEnum.getTitle());
+                var artist = new ArtistDTO();
+                artist.setName("emisora");
+                data.setArtist(artist);
 
-                        track.setUserData(data);
-                        mngr.scheduler.enqueue(track);
-                    }
+                result.setUserData(data);
+                mngr.scheduler.queue(result);
+            }
 
-                    @Override
-                    public void onPlaylistLoaded(@NotNull PlaylistLoaded playlistLoaded) {
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
 
-                    }
+            }
 
-                    @Override
-                    public void onSearchResultLoaded(@NotNull SearchResult searchResult) {
+            @Override
+            public void noMatches() {
 
-                    }
+            }
 
-                    @Override
-                    public void noMatches() {
-
-                    }
-
-                    @Override
-                    public void loadFailed(@NotNull LoadFailed loadFailed) {
-                        e.getHook()
-                                .sendMessage("Radio failed loaded")
-                                .queue();
-                    }
-                });
+            @Override
+            public void loadFailed(@NotNull FriendlyException ex) {
+                e.getHook()
+                        .sendMessage("Radio failed loaded")
+                        .queue();
+            }
+        });
     }
 
     @Override

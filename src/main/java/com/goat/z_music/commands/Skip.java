@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class Skip extends PlayerCommand {
     public ReplyCallbackAction exec(SlashCommandInteractionEvent e) {
         var mgr = getOrCreateMusicManager(e);
-        mgr.skip();
+        mgr.scheduler.skip();
         return e.reply("Skip");
     }
 

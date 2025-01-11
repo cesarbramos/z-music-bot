@@ -15,15 +15,19 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/spring-app']
 
   # Paso 4: Desplegar en Google Cloud Run, inyectando el secreto como variable de entorno
-  - name: 'gcr.io/cloud-builders/gke-deploy'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
-      - '--app=spring-app'
-      - '--filename=deployment.yaml'
+      - 'deploy'
+      - 'spring-app'
       - '--image=gcr.io/$PROJECT_ID/spring-app'
-      - '--location=us-east1'
-      - '--cluster=autopilot-cluster-1'
-      - '--expose=2333'
+      - '--platform=managed'
+      - '--region=us-east1'  # Cambia a tu región preferida
+      - '--allow-unauthenticated'
+      - '--port=2333'
+      - '--timeout=360'
+      - '--set-env-vars=Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
+      - '--set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest'
     secretEnv: ['Z_MUSIC_TOKEN']
 
 images:
@@ -36,3 +40,4 @@ availableSecrets:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+

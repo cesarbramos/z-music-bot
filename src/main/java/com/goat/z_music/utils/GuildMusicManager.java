@@ -1,74 +1,40 @@
 package com.goat.z_music.utils;
 
-import dev.arbjerg.lavalink.client.LavalinkClient;
-import dev.arbjerg.lavalink.client.Link;
-import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
-import dev.arbjerg.lavalink.client.player.Track;
+import com.github.topi314.lavasrc.ExtendedAudioTrack;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
+
 
 public class GuildMusicManager {
+    public final AudioPlayer player;
     public final TrackScheduler scheduler;
-    private final long guildId;
-    private final LavalinkClient lavalink;
 
-    public GuildMusicManager(long guildId, LavalinkClient lavalink) {
-        this.lavalink = lavalink;
-        this.guildId = guildId;
-        this.scheduler = new TrackScheduler(this);
+    /**
+     * Creates a player and a track scheduler.
+     *
+     * @param manager Audio player manager to use for creating the player.
+     */
+    public GuildMusicManager(AudioPlayerManager manager) {
+        player = manager.createPlayer();
+        scheduler = new TrackScheduler(player);
+        player.addListener(scheduler);
     }
 
-    private void setPaused(boolean state) {
-        this.getPlayer().ifPresent(
-                (player) -> player.setPaused(state)
-                        .subscribe()
-        );
+    /**
+     * @return Wrapper around AudioPlayer to use it as an AudioSendHandler.
+     */
+    public AudioPlayerSendHandler getSendHandler() {
+        return new AudioPlayerSendHandler(player);
     }
 
-    public void pause() {
-        setPaused(true);
-    }
-
-    public void resume() {
-        setPaused(false);
-    }
-
-    public void skip() {
-        this.scheduler.nextTrack();
-    }
-
-    public List<Track> getAllTracks() {
-        return Stream.concat(this.scheduler.removedTracks.stream(),
-                this.scheduler.queue.stream()).toList();
-    }
-
-    public void previous() {
-        this.getPlayer().ifPresent((player) -> {
-            if (player.getPosition() <= 0)
-                return;
-
-            player.setPosition(player.getPosition() + 1)
-                    .subscribe();
-        });
+    public List<ExtendedAudioTrack> getAllTracks() {
+        return scheduler.getAllTracks();
     }
 
     public void clearQueue() {
-        this.scheduler.queue.clear();
+        scheduler.clearQueue();
     }
 
-    public Optional<Link> getLink() {
-        return Optional.ofNullable(
-                this.lavalink.getLinkIfCached(this.guildId)
-        );
-    }
-
-    public LavalinkClient getLavalinkClient() {
-        return lavalink;
-    }
-
-    public Optional<LavalinkPlayer> getPlayer() {
-        return this.getLink().map(Link::getCachedPlayer);
-    }
 }

@@ -12,7 +12,11 @@ public class Util {
     }
 
     public static String inlineCode(String content) {
-        return "`"+content+"`";
+        return isEmpty(content) ? "" : "`"+content+"`";
+    }
+
+    public static boolean isEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 
 }

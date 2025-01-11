@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class Resume extends PlayerCommand {
     public ReplyCallbackAction exec(SlashCommandInteractionEvent e) {
         var mgr = getOrCreateMusicManager(e);
-        mgr.resume();
+        mgr.scheduler.resume();
         return e.reply("Resumed");
     }
 

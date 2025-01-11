@@ -1,15 +1,15 @@
 package com.goat.z_music.utils;
 
 import com.goat.z_music.dto.SongDTO;
-import dev.arbjerg.lavalink.client.AbstractAudioLoadResultHandler;
-import dev.arbjerg.lavalink.client.player.*;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.MonoSink;
 
-import java.util.List;
-
-public class AudioLoader extends AbstractAudioLoadResultHandler {
+public class AudioLoader implements AudioLoadResultHandler {
     private final SlashCommandInteractionEvent event;
     private final GuildMusicManager mngr;
     private SongDTO song;
@@ -27,42 +27,24 @@ public class AudioLoader extends AbstractAudioLoadResultHandler {
     }
 
     @Override
-    public void ontrackLoaded(@NotNull TrackLoaded result) {
+    public void trackLoaded(@NotNull AudioTrack result) {
         if (songMonoSink != null) {
             song = TrackUtil.getTrackLoaded(result);
             songMonoSink.success(song);
         }
-        final Track track = result.getTrack();
-        track.setUserData(song);
-        this.mngr.scheduler.enqueue(track);
+        result.setUserData(song);
+        this.mngr.scheduler.queue(result);
         //event.getHook().sendMessage("Added to queue: " + trackTitle + "\nRequested by: <@" + event.getUser().getName() + '>').queue();
     }
 
     @Override
-    public void onPlaylistLoaded(@NotNull PlaylistLoaded result) {
+    public void playlistLoaded(@NotNull AudioPlaylist result) {
         final int trackCount = result.getTracks().size();
        // event.getHook()
         //        .sendMessage("Added " + trackCount + " tracks to the queue from " + result.getInfo().getName() + "!")
         //        .queue();
 
-        this.mngr.scheduler.enqueuePlaylist(result.getTracks());
-    }
-
-    @Override
-    public void onSearchResultLoaded(@NotNull SearchResult result) {
-        final List<Track> tracks = result.getTracks();
-
-        if (tracks.isEmpty()) {
-            //event.getHook().sendMessage("No tracks found!").queue();
-            return;
-        }
-
-        final Track firstTrack = tracks.get(0);
-        firstTrack.setUserData(song);
-
-        //event.getHook().sendMessage("Adding to queue: " + firstTrack.getInfo().getTitle()).queue();
-
-        this.mngr.scheduler.enqueue(firstTrack);
+        this.mngr.scheduler.queuePlaylist(result);
     }
 
     @Override
@@ -71,7 +53,7 @@ public class AudioLoader extends AbstractAudioLoadResultHandler {
     }
 
     @Override
-    public void loadFailed(@NotNull LoadFailed result) {
-        event.getHook().sendMessage("Failed to load track! " + result.getException().getMessage()).queue();
+    public void loadFailed(FriendlyException ex) {
+        event.getHook().sendMessage("Failed to load track! " + ex.getMessage()).queue();
     }
 }

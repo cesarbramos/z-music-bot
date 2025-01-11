@@ -8,6 +8,7 @@ import com.goat.z_music.enums.UrlSourceEnum;
 import com.goat.z_music.utils.AudioLoader;
 import com.goat.z_music.utils.EmbedUtil;
 import com.goat.z_music.utils.PlayerCommand;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -30,10 +31,9 @@ public class Play extends PlayerCommand {
 
     private final DeezerClient deezerClient;
 
+    private final AudioPlayerManager playerManager;
+
     public ReplyCallbackAction exec(SlashCommandInteractionEvent e) {
-
-        var link = lavalinkClient.getOrCreateLink(Long.parseLong(e.getGuild().getId()));
-
         var memberVoice = e.getMember().getVoiceState();
 
         if (memberVoice.inAudioChannel()) {
@@ -60,7 +60,7 @@ public class Play extends PlayerCommand {
                 final var mngr = this.getOrCreateMusicManager(e);
 
                 Mono<SongDTO> songDTOMono = Mono.create(sink ->
-                        link.loadItem(query).subscribe(new AudioLoader(e, mngr, null, sink)));
+                        playerManager.loadItem(query, new AudioLoader(e, mngr, null, sink)));
 
                 song = songDTOMono.block();
 
@@ -72,11 +72,10 @@ public class Play extends PlayerCommand {
         if (song == null)
             return e.reply("Canción no encontrada").setEphemeral(true);
 
-        String search = "ytsearch:"+ String.format("%s - %s", song.getTitle(), song.getArtist().getName());
-
         var msg = EmbedUtil.playSong(song);
         final var mngr = this.getOrCreateMusicManager(e);
-        link.loadItem(search).subscribe(new AudioLoader(e, mngr, song));
+
+        playerManager.loadItem(song.getLink(), new AudioLoader(e, mngr, song));
         return e.replyEmbeds(msg);
     }
 

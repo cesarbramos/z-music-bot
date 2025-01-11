@@ -3,23 +3,26 @@ package com.goat.z_music.utils;
 import com.goat.z_music.dto.AlbumDTO;
 import com.goat.z_music.dto.ArtistDTO;
 import com.goat.z_music.dto.SongDTO;
-import dev.arbjerg.lavalink.client.player.TrackLoaded;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import dev.lavalink.youtube.track.YoutubeAudioTrack;
 
 public class TrackUtil {
 
-    public static SongDTO getTrackLoaded(TrackLoaded result) {
+    public static SongDTO getTrackLoaded(AudioTrack track) {
+        var result = (YoutubeAudioTrack) track;
         SongDTO song = new SongDTO();
-        var info = result.getTrack().getInfo();
-        song.setDuration(info.getLength());
+        AudioTrackInfo info = result.getInfo();
+        song.setDuration(result.getDuration());
         var artist = new ArtistDTO();
-        artist.setName(info.getAuthor());
+        artist.setName(result.getInfo().author);
         song.setArtist(artist);
         var album = new AlbumDTO();
-        album.setCover(info.getArtworkUrl());
+        album.setCover(info.artworkUrl);
         album.setTitle("");
         song.setAlbum(album);
-        song.setTitle(info.getTitle());
-        song.setLink(info.getUri());
+        song.setTitle(info.title);
+        song.setLink(info.uri);
         return song;
     }
 

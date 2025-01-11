@@ -5,18 +5,17 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class Pause extends PlayerCommand {
+@Component
+public class Source extends PlayerCommand {
     public ReplyCallbackAction exec(SlashCommandInteractionEvent e) {
         var mgr = getOrCreateMusicManager(e);
-        mgr.scheduler.pause();
-        return e.reply("Paused");
+        return e.reply("");
     }
 
     @Override
     public SlashCommandData definition() {
-        return Commands.slash("pause", "Pausa la canción actual");
+        return Commands.slash("source", "Cambia la fuente del audio");
     }
 }
