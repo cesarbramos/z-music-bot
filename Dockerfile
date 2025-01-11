@@ -8,7 +8,7 @@ RUN apt update \
 ENV TZ="America/Bogota"
 
 # Copia los archivos JAR generados en `build/libs/` al contenedor
-ARG JAR_FILE=build/libs/*.jar
+ARG JAR_FILE=build/libs/z-music-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} app.jar
 
 EXPOSE 8080/tcp
