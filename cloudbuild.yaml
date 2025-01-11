@@ -26,7 +26,7 @@ steps:
       - '--allow-unauthenticated'
       - '--port=2333'
       - '--timeout=360'
-      - '--set-env-vars=Z_MUSIC_TOKEN=$$Z_MUSIC_TOKEN'
+      - '--set-env-vars=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest'
       - '--set-secrets=Z_MUSIC_TOKEN=Z_MUSIC_TOKEN:latest'
     secretEnv: ['Z_MUSIC_TOKEN']
 
