@@ -23,7 +23,7 @@ steps:
       - '--image=gcr.io/$PROJECT_ID/spring-app'
       - '--location=us-east1'
       - '--cluster=autopilot-cluster-1'
-      - '--expose=2333'
+      - '--expose=8080'
     secretEnv: ['Z_MUSIC_TOKEN']
 
 images:
